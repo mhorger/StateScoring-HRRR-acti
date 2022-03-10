@@ -1,7 +1,7 @@
 ---
 title: "SSXXCoding"
 author: "MNHorger"
-date: "1/11/2021"
+date: "3/7/2022"
 output: html_document
 ---
 
@@ -30,7 +30,8 @@ library(magicfor)
 
 ###Inputting your data 
 
-Read in the data file. Replace all "XX" with the subject number 
+Change your working directory. 
+Read in the data file. Replace all "XX" with the subject number.
 
 ```{r}
 SSXX <- read_excel("SSXX.xlsx")
@@ -38,7 +39,10 @@ SSXX <- read_excel("SSXX.xlsx")
 
 ###Breaking your data into each night, cleaning, and looking for missing data 
 
-Look through the file in excel. Make a note of the start and end row for each night. These will correspond to your DOWN interval in the actigraphy file.
+Look through the file in excel. Make a note of the start and end row for each night. These will correspond to your Down column. 
+  - The Down interval is manually set when coding actigraphy. It 
+    encompasses the entire sleep period, even if the infant wakes and/or is
+    removed from the bed. 
 Current values are only an example
 
 ```{r}
@@ -86,6 +90,7 @@ table(is.na (SSXXN5$`Lifetouch Respiration Rate`))
 ```
 
 
+
 ###Calculate z scores 
 
 ```{r}
@@ -103,6 +108,22 @@ SSXXN2RRz <- ( SSXXN2$`Lifetouch Respiration Rate` - (mean(SSXXN2$`Lifetouch Res
 SSXXN3RRz <- ( SSXXN3$`Lifetouch Respiration Rate` - (mean(SSXXN3$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN3$`Lifetouch Respiration Rate`, na.rm = TRUE)
 SSXXN4RRz <- ( SSXXN4$`Lifetouch Respiration Rate` - (mean(SSXXN4$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN4$`Lifetouch Respiration Rate`, na.rm = TRUE)
 SSXXN5RRz <- ( SSXXN5$`Lifetouch Respiration Rate` - (mean(SSXXN5$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN5$`Lifetouch Respiration Rate`, na.rm = TRUE)
+
+
+
+#Replace missing data with the mean 
+SSXXN1$SSXXN1HRz [is.na(SSXXN1$SSXXN1HRz)] <- 0
+SSXXN2$SSXXN2HRz [is.na(SSXXN2$SSXXN2HRz)] <- 0
+SSXXN3$SSXXN3HRz [is.na(SSXXN3$SSXXN3HRz)] <- 0
+SSXXN4$SSXXN4HRz [is.na(SSXXN4$SSXXN4HRz)] <- 0
+SSXXN5$SSXXN5HRz [is.na(SSXXN5$SSXXN5HRz)] <- 0
+
+SSXXN1$SSXXN1RRz [is.na(SSXXN1$SSXXN1RRz)] <- 0
+SSXXN2$SSXXN2RRz [is.na(SSXXN2$SSXXN2RRz)] <- 0
+SSXXN3$SSXXN3RRz [is.na(SSXXN3$SSXXN3RRz)] <- 0
+SSXXN4$SSXXN4RRz [is.na(SSXXN4$SSXXN4RRz)] <- 0
+SSXXN5$SSXXN5RRz [is.na(SSXXN5$SSXXN5RRz)] <- 0
+
 
 
 
@@ -247,140 +268,6 @@ SSXXN5 <- SSXXN5 %>%
   mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
 
 ```
-
-
-
-###Calculate number of minutes scored as each state 
-
-```{r}
- counts <-
- SS9AutoCode %>% count(Night, EvalActi)
-```
-
-
-
-
-
-
-Comparison of HR and RR 
-
-
-
-Z SCORE 0 
-
-```{r}
-
-SS9AutoCode <- read_excel("SS9AutoCode.xlsx")
-
-
-ActiData <- c(SS9N1$Sleep, SS9N2$Sleep, SS9N3$Sleep, SS9N4$Sleep, SS9N5$Sleep)
-
-Time <- c(SS9N1$Timestamp..Eastern.Standard.Time. ,  SS9N2$Timestamp..Eastern.Standard.Time. , SS9N3$Timestamp..Eastern.Standard.Time. , SS9N4$Timestamp..Eastern.Standard.Time. , SS9N5$Timestamp..Eastern.Standard.Time.)
-
-SS9AutoCode <- data.frame(SS9AutoCode, ActiData, Time)
-
-Agree <- c(SS9AutoCode$HR0 + SS9AutoCode$RR0)
-
-SS9AutoCode <- data.frame(SS9AutoCode, Agree)
-
-EvalActi <- c(Agree*ActiData)
-
-SS9AutoCode <- data.frame(SS9AutoCode, EvalActi)
-
-final <- data.frame(SS9AutoCode$Time, SS9AutoCode$Night, EvalActi)
-
-
-
-```
-
-
-Z SCORE 0.25 
-
-```{r}
-
-SS9AutoCode <- read_excel("SS9AutoCode.xlsx")
-
-
-ActiData <- c(SS9N1$Sleep, SS9N2$Sleep, SS9N3$Sleep, SS9N4$Sleep, SS9N5$Sleep)
-
-Time <- c(SS9N1$Timestamp..Eastern.Standard.Time. ,  SS9N2$Timestamp..Eastern.Standard.Time. , SS9N3$Timestamp..Eastern.Standard.Time. , SS9N4$Timestamp..Eastern.Standard.Time. , SS9N5$Timestamp..Eastern.Standard.Time.)
-
-SS9AutoCode <- data.frame(SS9AutoCode, ActiData, Time)
-
-Agree <- c(SS9AutoCode$HR25 + SS9AutoCode$RR25)
-
-SS9AutoCode <- data.frame(SS9AutoCode, Agree)
-
-EvalActi <- c(Agree*ActiData)
-
-SS9AutoCode <- data.frame(SS9AutoCode, EvalActi)
-
-final <- data.frame(SS9AutoCode$Time, SS9AutoCode$Night, EvalActi)
-
- counts <-
- SS9AutoCode %>% count(Night, EvalActi)
-
-```
-
-
-```{r}
-Agree <- c(SS9AutoCode$RR25)
-
-SS9AutoCode <- data.frame(SS9AutoCode, Agree)
-
-EvalActi <- c(Agree*ActiData)
-
-SS9AutoCode <- data.frame(SS9AutoCode, EvalActi)
-
-final <- data.frame(SS9AutoCode$Time, SS9AutoCode$Night, EvalActi)
-
- counts <-
- SS9AutoCode %>% count(Night, EvalActi)
-
-```
-
-
-
-Z SCORE 0.5 
-
-```{r}
-
-SS9AutoCode <- read_excel("SS9AutoCode.xlsx")
-
-
-ActiData <- c(SS9N1$Sleep, SS9N2$Sleep, SS9N3$Sleep, SS9N4$Sleep, SS9N5$Sleep)
-
-Time <- c(SS9N1$Timestamp..Eastern.Standard.Time. ,  SS9N2$Timestamp..Eastern.Standard.Time. , SS9N3$Timestamp..Eastern.Standard.Time. , SS9N4$Timestamp..Eastern.Standard.Time. , SS9N5$Timestamp..Eastern.Standard.Time.)
-
-SS9AutoCode <- data.frame(SS9AutoCode, ActiData, Time)
-
-Agree <- c(SS9AutoCode$HR + SS9AutoCode$RR)
-
-SS9AutoCode <- data.frame(SS9AutoCode, Agree)
-
-EvalActi <- c(Agree*ActiData)
-
-SS9AutoCode <- data.frame(SS9AutoCode, EvalActi)
-
-final <- data.frame(SS9AutoCode$Time, SS9AutoCode$Night, EvalActi)
-
- counts <-
- SS9AutoCode %>% count(Night, EvalActi)
-
-```
-
-
-
-
-
-
-###Troubleshooting
-
-Missing data
-```{r}
-SS9N3$SS9N3HRz [is.na(SS9N3$SS9N3HRz)] <- 0
-```
-
 
 
 
