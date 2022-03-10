@@ -1,0 +1,275 @@
+---
+title: "SS5Coding"
+author: "MNHorger"
+date: "3/7/2022"
+output: html_document
+---
+
+#Sleep States Automated Coding 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(hms)
+library(rmcorr)
+library(haven)
+library(BlandAltmanLeh)
+library(pwr)
+library(readxl)
+library(magicfor)
+
+```
+
+
+
+
+
+###Inputting your data 
+
+Change your working directory. 
+Read in the data file. Replace all "XX" with the subject number.
+
+```{r}
+SS5 <- read_excel("SS5.xlsx")
+```
+
+###Breaking your data into each night, cleaning, and looking for missing data 
+
+Look through the file in excel. Make a note of the start and end row for each night. These will correspond to your Down column. 
+  - The Down interval is manually set when coding actigraphy. It 
+    encompasses the entire sleep period, even if the infant wakes and/or is
+    removed from the bed. 
+Current values are only an example
+
+```{r}
+
+SS5N1 <- SS5[189:789,]
+night <-c(rep(1, nrow(SS5N1)))
+SS5N1 <- data.frame(SS5N1, night)
+
+SS5N2 <- SS5[1628:2251,  ]
+night <-c(rep(1, nrow(SS5N2)))
+SS5N2 <- data.frame(SS5N2, night)
+
+SS5N3 <- SS5 [3163:3728, ]
+night <-c(rep(1, nrow(SS5N3)))
+SS5N3 <- data.frame(SS5N3, night)
+
+SS5N4 <- SS5[4502:5165, ]
+night <-c(rep(1, nrow(SS5N4)))
+SS5N4 <- data.frame(SS5N4, night)
+
+SS5N5 <- SS5[6045:6572,  ]
+night <-c(rep(5, nrow(SS5N5)))
+SS5N5 <- data.frame(SS5N5, night)
+
+
+
+
+
+#check for missing data 
+
+table(is.na (SS5N1$HeartRate))
+table(is.na (SS5N2$HeartRate))
+table(is.na (SS5N3$HeartRate))
+table(is.na (SS5N4$HeartRate))
+table(is.na (SS5N5$HeartRate))
+
+table(is.na (SS5N1$RespirationRate))
+table(is.na (SS5N2$RespirationRate))
+table(is.na (SS5N3$RespirationRate))
+table(is.na (SS5N4$RespirationRate))
+table(is.na (SS5N5$RespirationRate))
+
+
+```
+
+
+
+###Calculate z scores 
+
+```{r}
+SS5N1HRz <- ( SS5N1$HeartRate - (mean(SS5N1$HeartRate, na.rm = TRUE))) / sd(SS5N1$HeartRate, na.rm = TRUE)
+SS5N2HRz <- ( SS5N2$HeartRate - (mean(SS5N2$HeartRate, na.rm = TRUE))) / sd(SS5N2$HeartRate, na.rm = TRUE)
+SS5N3HRz <- ( SS5N3$HeartRate - (mean(SS5N3$HeartRate, na.rm = TRUE))) / sd(SS5N3$HeartRate, na.rm = TRUE)
+SS5N4HRz <- ( SS5N4$HeartRate - (mean(SS5N4$HeartRate, na.rm = TRUE))) / sd(SS5N4$HeartRate, na.rm = TRUE)
+SS5N5HRz <- ( SS5N5$HeartRate - (mean(SS5N5$HeartRate, na.rm = TRUE))) / sd(SS5N5$HeartRate, na.rm = TRUE)
+
+
+
+
+SS5N1RRz <- ( SS5N1$RespirationRate - (mean(SS5N1$RespirationRate, na.rm = TRUE))) / sd(SS5N1$RespirationRate, na.rm = TRUE)
+SS5N2RRz <- ( SS5N2$RespirationRate - (mean(SS5N2$RespirationRate, na.rm = TRUE))) / sd(SS5N2$RespirationRate, na.rm = TRUE)
+SS5N3RRz <- ( SS5N3$RespirationRate - (mean(SS5N3$RespirationRate, na.rm = TRUE))) / sd(SS5N3$RespirationRate, na.rm = TRUE)
+SS5N4RRz <- ( SS5N4$RespirationRate - (mean(SS5N4$RespirationRate, na.rm = TRUE))) / sd(SS5N4$RespirationRate, na.rm = TRUE)
+SS5N5RRz <- ( SS5N5$RespirationRate - (mean(SS5N5$RespirationRate, na.rm = TRUE))) / sd(SS5N5$RespirationRate, na.rm = TRUE)
+
+
+
+#Replace missing data with the mean
+SS5N1$SS5N1HRz [is.na(SS5N1$SS5N1HRz)] <- 0
+SS5N2$SS5N2HRz [is.na(SS5N2$SS5N2HRz)] <- 0
+SS5N3$SS5N3HRz [is.na(SS5N3$SS5N3HRz)] <- 0
+SS5N4$SS5N4HRz [is.na(SS5N4$SS5N4HRz)] <- 0
+SS5N5$SS5N5HRz [is.na(SS5N5$SS5N5HRz)] <- 0
+
+SS5N1$SS5N1RRz [is.na(SS5N1$SS5N1RRz)] <- 0
+SS5N2$SS5N2RRz [is.na(SS5N2$SS5N2RRz)] <- 0
+SS5N3$SS5N3RRz [is.na(SS5N3$SS5N3RRz)] <- 0
+SS5N4$SS5N4RRz [is.na(SS5N4$SS5N4RRz)] <- 0
+SS5N5$SS5N5RRz [is.na(SS5N5$SS5N5RRz)] <- 0
+
+
+
+
+#add to the dataset 
+SS5N1 <- data.frame(SS5N1, SS5N1HRz, SS5N1RRz)
+SS5N2 <- data.frame(SS5N2, SS5N2HRz, SS5N2RRz)
+SS5N3 <- data.frame(SS5N3, SS5N3HRz, SS5N3RRz)
+SS5N4 <- data.frame(SS5N4, SS5N4HRz, SS5N4RRz)
+SS5N5 <- data.frame(SS5N5, SS5N5HRz, SS5N5RRz)
+
+
+```
+
+
+
+
+
+###Compare each minute to the z score threshold
+
+#### z > .5
+
+```{r}
+
+
+SS5N1 <- SS5N1 %>% 
+  mutate(HR50 = case_when(SS5N1HRz > 0.5 ~ 2, 
+                         SS5N1HRz <= 0.5 ~ 1 ), 
+          RR50 = case_when(SS5N1RRz > 0.5 ~ 2, 
+                          SS5N1RRz <= 0.5 ~ 1)) %>% 
+  mutate(Agree = HR50 + RR50, EvalActi50 = Agree*Sleep)
+
+SS5N2 <- SS5N2 %>% 
+  mutate(HR50 = case_when(SS5N2HRz > 0.5 ~ 2, 
+                         SS5N2HRz <= 0.5 ~ 1 ), 
+          RR50 = case_when(SS5N2RRz > 0.5 ~ 2, 
+                          SS5N2RRz <= 0.5 ~ 1)) %>% 
+  mutate(Agree = HR50 + RR50, EvalActi50 = Agree*Sleep)
+
+SS5N3 <- SS5N3 %>% 
+  mutate(HR50 = case_when(SS5N3HRz > 0.5 ~ 2, 
+                         SS5N3HRz <= 0.5 ~ 1 ), 
+          RR50 = case_when(SS5N3RRz > 0.5 ~ 2, 
+                          SS5N3RRz <= 0.5 ~ 1)) %>% 
+  mutate(Agree = HR50 + RR50, EvalActi50 = Agree*Sleep)
+
+SS5N4 <- SS5N4 %>% 
+  mutate(HR50 = case_when(SS5N4HRz > 0.5 ~ 2, 
+                         SS5N4HRz <= 0.5 ~ 1 ), 
+          RR50 = case_when(SS5N4RRz > 0.5 ~ 2, 
+                          SS5N4RRz <= 0.5 ~ 1)) %>% 
+  mutate(Agree = HR50 + RR50, EvalActi50 = Agree*Sleep)
+
+SS5N5 <- SS5N5 %>% 
+  mutate(HR50 = case_when(SS5N5HRz > 0.5 ~ 2, 
+                         SS5N5HRz <= 0.5 ~ 1 ), 
+          RR50 = case_when(SS5N5RRz > 0.5 ~ 2, 
+                          SS5N5RRz <= 0.5 ~ 1)) %>% 
+  mutate(Agree = HR50 + RR50, EvalActi50 = Agree*Sleep)
+
+```
+
+
+#### z > 0.25
+
+```{r}
+
+SS5N1 <- SS5N1 %>% 
+  mutate(HR25 = case_when(SS5N1HRz > 0.25 ~ 2, 
+                         SS5N1HRz <= 0.25 ~ 1 ), 
+          RR25 = case_when(SS5N1RRz > 0.25 ~ 2, 
+                          SS5N1RRz <= 0.25 ~ 1)) %>% 
+  mutate(Agree = HR25 + RR25, EvalActi25 = Agree*Sleep)
+
+SS5N2 <- SS5N2 %>% 
+  mutate(HR25 = case_when(SS5N2HRz > 0.25 ~ 2, 
+                         SS5N2HRz <= 0.25 ~ 1 ), 
+          RR25 = case_when(SS5N2RRz > 0.25 ~ 2, 
+                          SS5N2RRz <= 0.25 ~ 1)) %>% 
+  mutate(Agree = HR25 + RR25, EvalActi25 = Agree*Sleep)
+
+SS5N3 <- SS5N3 %>% 
+  mutate(HR25 = case_when(SS5N3HRz > 0.25 ~ 2, 
+                         SS5N3HRz <= 0.25 ~ 1 ), 
+          RR25 = case_when(SS5N3RRz > 0.25 ~ 2, 
+                          SS5N3RRz <= 0.25 ~ 1)) %>% 
+  mutate(Agree = HR25 + RR25, EvalActi25 = Agree*Sleep)
+
+SS5N4 <- SS5N4 %>% 
+  mutate(HR25 = case_when(SS5N4HRz > 0.25 ~ 2, 
+                         SS5N4HRz <= 0.25 ~ 1 ), 
+          RR25 = case_when(SS5N4RRz > 0.25 ~ 2, 
+                          SS5N4RRz <= 0.25 ~ 1)) %>% 
+  mutate(Agree = HR25 + RR25, EvalActi25 = Agree*Sleep)
+
+SS5N5 <- SS5N5 %>% 
+  mutate(HR25 = case_when(SS5N5HRz > 0.25 ~ 2, 
+                         SS5N5HRz <= 0.25 ~ 1 ), 
+          RR25 = case_when(SS5N5RRz > 0.25 ~ 2, 
+                          SS5N5RRz <= 0.25 ~ 1)) %>% 
+  mutate(Agree = HR25 + RR25, EvalActi25 = Agree*Sleep)
+
+```
+
+
+#### z > 0
+
+```{r}
+
+SS5N1 <- SS5N1 %>% 
+  mutate(HR00 = case_when(SS5N1HRz > 0 ~ 2, 
+                         SS5N1HRz <= 0 ~ 1 ), 
+          RR00 = case_when(SS5N1RRz > 0 ~ 2, 
+                          SS5N1RRz <= 0 ~ 1)) %>% 
+  mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
+
+SS5N2 <- SS5N2 %>% 
+  mutate(HR00 = case_when(SS5N2HRz > 0 ~ 2, 
+                         SS5N2HRz <= 0 ~ 1 ), 
+          RR00 = case_when(SS5N2RRz > 0 ~ 2, 
+                          SS5N2RRz <= 0 ~ 1)) %>% 
+  mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
+
+SS5N3 <- SS5N3 %>% 
+  mutate(HR00 = case_when(SS5N3HRz > 0 ~ 2, 
+                         SS5N3HRz <= 0 ~ 1 ), 
+          RR00 = case_when(SS5N3RRz > 0 ~ 2, 
+                          SS5N3RRz <= 0 ~ 1)) %>% 
+  mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
+
+SS5N4 <- SS5N4 %>% 
+  mutate(HR00 = case_when(SS5N4HRz > 0 ~ 2, 
+                         SS5N4HRz <= 0 ~ 1 ), 
+          RR00 = case_when(SS5N4RRz > 0 ~ 2, 
+                          SS5N4RRz <= 0 ~ 1)) %>% 
+  mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
+
+SS5N5 <- SS5N5 %>% 
+  mutate(HR00 = case_when(SS5N5HRz > 0 ~ 2, 
+                         SS5N5HRz <= 0 ~ 1 ), 
+          RR00 = case_when(SS5N5RRz > 0 ~ 2, 
+                          SS5N5RRz <= 0 ~ 1)) %>% 
+  mutate(Agree = HR00 + RR00, EvalActi00 = Agree*Sleep)
+
+```
+
+
+
+
+
+

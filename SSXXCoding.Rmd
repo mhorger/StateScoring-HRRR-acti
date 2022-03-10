@@ -48,7 +48,7 @@ Current values are only an example
 ```{r}
 
 
-SSXXN1 <- SS9['starting row':'ending row',]
+SSXXN1 <- SSXX['starting row':'ending row',]
 night <-c(rep(1, nrow(SSXXN1)))
 SSXXN1 <- data.frame(SSXXN1, night)
 
@@ -74,17 +74,17 @@ SSXXN5 <- data.frame(SSXXN5, night)
 
 #check for missing data 
 
-table(is.na (SSXXN1$`Lifetouch Heart Rate`))
-table(is.na (SSXXN2$`Lifetouch Heart Rate`))
-table(is.na (SSXXN3$`Lifetouch Heart Rate`))
-table(is.na (SSXXN4$`Lifetouch Heart Rate`))
-table(is.na (SSXXN5$`Lifetouch Heart Rate`))
+table(is.na (SSXXN1$HeartRate))
+table(is.na (SSXXN2$HeartRate))
+table(is.na (SSXXN3$HeartRate))
+table(is.na (SSXXN4$HeartRate))
+table(is.na (SSXXN5$HeartRate))
 
-table(is.na (SSXXN1$`Lifetouch Respiration Rate`))
-table(is.na (SSXXN2$`Lifetouch Respiration Rate`))
-table(is.na (SSXXN3$`Lifetouch Respiration Rate`))
-table(is.na (SSXXN4$`Lifetouch Respiration Rate`))
-table(is.na (SSXXN5$`Lifetouch Respiration Rate`))
+table(is.na (SSXXN1$RespirationRate))
+table(is.na (SSXXN2$RespirationRate))
+table(is.na (SSXXN3$RespirationRate))
+table(is.na (SSXXN4$RespirationRate))
+table(is.na (SSXXN5$RespirationRate))
 
 
 ```
@@ -94,20 +94,20 @@ table(is.na (SSXXN5$`Lifetouch Respiration Rate`))
 ###Calculate z scores 
 
 ```{r}
-SSXXN1HRz <- ( SSXXN1$`Lifetouch Heart Rate` - (mean(SSXXN1$`Lifetouch Heart Rate`, na.rm = TRUE))) / sd(SSXXN1$`Lifetouch Heart Rate`, na.rm = TRUE)
-SSXXN2HRz <- ( SSXXN2$`Lifetouch Heart Rate` - (mean(SSXXN2$`Lifetouch Heart Rate`, na.rm = TRUE))) / sd(SSXXN2$`Lifetouch Heart Rate`, na.rm = TRUE)
-SSXXN3HRz <- ( SSXXN3$`Lifetouch Heart Rate` - (mean(SSXXN3$`Lifetouch Heart Rate`, na.rm = TRUE))) / sd(SSXXN3$`Lifetouch Heart Rate`, na.rm = TRUE)
-SSXXN4HRz <- ( SSXXN4$`Lifetouch Heart Rate` - (mean(SSXXN4$`Lifetouch Heart Rate`, na.rm = TRUE))) / sd(SSXXN4$`Lifetouch Heart Rate`, na.rm = TRUE)
-SSXXN5HRz <- ( SSXXN5$`Lifetouch Heart Rate` - (mean(SSXXN5$`Lifetouch Heart Rate`, na.rm = TRUE))) / sd(SSXXN5$`Lifetouch Heart Rate`, na.rm = TRUE)
+SSXXN1HRz <- ( SSXXN1$HeartRate - (mean(SSXXN1$HeartRate, na.rm = TRUE))) / sd(SSXXN1$HeartRate, na.rm = TRUE)
+SSXXN2HRz <- ( SSXXN2$HeartRate - (mean(SSXXN2$HeartRate, na.rm = TRUE))) / sd(SSXXN2$HeartRate, na.rm = TRUE)
+SSXXN3HRz <- ( SSXXN3$HeartRate - (mean(SSXXN3$HeartRate, na.rm = TRUE))) / sd(SSXXN3$HeartRate, na.rm = TRUE)
+SSXXN4HRz <- ( SSXXN4$HeartRate - (mean(SSXXN4$HeartRate, na.rm = TRUE))) / sd(SSXXN4$HeartRate, na.rm = TRUE)
+SSXXN5HRz <- ( SSXXN5$HeartRate - (mean(SSXXN5$HeartRate, na.rm = TRUE))) / sd(SSXXN5$HeartRate, na.rm = TRUE)
 
 
 
 
-SSXXN1RRz <- ( SSXXN1$`Lifetouch Respiration Rate` - (mean(SSXXN1$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN1$`Lifetouch Respiration Rate`, na.rm = TRUE)
-SSXXN2RRz <- ( SSXXN2$`Lifetouch Respiration Rate` - (mean(SSXXN2$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN2$`Lifetouch Respiration Rate`, na.rm = TRUE)
-SSXXN3RRz <- ( SSXXN3$`Lifetouch Respiration Rate` - (mean(SSXXN3$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN3$`Lifetouch Respiration Rate`, na.rm = TRUE)
-SSXXN4RRz <- ( SSXXN4$`Lifetouch Respiration Rate` - (mean(SSXXN4$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN4$`Lifetouch Respiration Rate`, na.rm = TRUE)
-SSXXN5RRz <- ( SSXXN5$`Lifetouch Respiration Rate` - (mean(SSXXN5$`Lifetouch Respiration Rate`, na.rm = TRUE))) / sd(SSXXN5$`Lifetouch Respiration Rate`, na.rm = TRUE)
+SSXXN1RRz <- ( SSXXN1$RespirationRate - (mean(SSXXN1$RespirationRate, na.rm = TRUE))) / sd(SSXXN1$RespirationRate, na.rm = TRUE)
+SSXXN2RRz <- ( SSXXN2$RespirationRate - (mean(SSXXN2$RespirationRate, na.rm = TRUE))) / sd(SSXXN2$RespirationRate, na.rm = TRUE)
+SSXXN3RRz <- ( SSXXN3$RespirationRate - (mean(SSXXN3$RespirationRate, na.rm = TRUE))) / sd(SSXXN3$RespirationRate, na.rm = TRUE)
+SSXXN4RRz <- ( SSXXN4$RespirationRate - (mean(SSXXN4$RespirationRate, na.rm = TRUE))) / sd(SSXXN4$RespirationRate, na.rm = TRUE)
+SSXXN5RRz <- ( SSXXN5$RespirationRate - (mean(SSXXN5$RespirationRate, na.rm = TRUE))) / sd(SSXXN5$RespirationRate, na.rm = TRUE)
 
 
 
