@@ -6,7 +6,7 @@ It includes:
   1. Cardiorespiratory and actigraphy data for one year old infants (N = 10). Each infant participated for 5 nights. 
   2. R markdown files
           - Template code for state scoring (SSXXCoding.Rmd)
-          - Example code for one participant ()
+          - Example code for one participant (SS5.Rmd)
           
           
 ### Data Dictionary 
